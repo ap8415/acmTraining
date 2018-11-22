@@ -1,0 +1,2 @@
+Test testdata/acm_cerc_2011-12/program: FAILED, output does not match expected output!
+Your output was 116584 bits long; the accepted output was 499272 bits long
