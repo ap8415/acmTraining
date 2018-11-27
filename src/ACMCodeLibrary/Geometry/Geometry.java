@@ -1,5 +1,7 @@
 package ACMCodeLibrary.Geometry;
 
+import java.util.Comparator;
+
 class Geometry {
     static final double INF = 1e9;
     static final double EPS = 1e-9;
@@ -401,5 +403,35 @@ class Geometry {
         return (a + b > c) && (a + c > b) && (b + c > a);
     }
 
+    static Comparator<PointDouble> polarOrder(PointDouble p) {
+        return new PolarOrder(p);
+    }
+
+    // compare other points relative to polar angle (between 0 and 2pi) they make with this Point
+    private static class PolarOrder implements Comparator<PointDouble> {
+        private PointDouble p;
+
+        PolarOrder(PointDouble p) {
+            this.p = new PointDouble(p.x, p.y); // copy point
+        }
+
+        public int compare(PointDouble q1, PointDouble q2) {
+            double dx1 = q1.x - p.x;
+            double dy1 = q1.y - p.y;
+            double dx2 = q2.x - p.x;
+            double dy2 = q2.y - p.y;
+
+            if      (dy1 >= 0 && dy2 < 0) return -1;    // q1 above; q2 below
+            else if (dy2 >= 0 && dy1 < 0) return +1;    // q1 below; q2 above
+            else if (dy1 == 0 && dy2 == 0) {            // 3-collinear and horizontal
+                if      (dx1 >= 0 && dx2 < 0) return -1;
+                else if (dx2 >= 0 && dx1 < 0) return +1;
+                else                          return  0;
+            }
+//            else return -ccw(p, q1, q2);     // both above or below
+            else return ccw(p, q1, q2) ? -1 : (collinear(p, q1, q2) ? 0 : -1);
+            // Note: ccw() recomputes dx1, dy1, dx2, and dy2
+        }
+    }
 
 }
